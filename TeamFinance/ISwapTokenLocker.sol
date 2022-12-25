@@ -9,4 +9,5 @@ interface ISwapTokenLocker {
     function getToken() external view returns(address);
     function lockData(address) external view returns(uint128 amount,uint128 claimedAmount,uint64 lockTimestamp,uint64 lastUpdated,uint32 lockHours);
     function sendLockTokenMany(address[] memory _users,uint128[] memory _amounts,uint32[] memory _lockHours,uint256 _sendAmount) external ;
+    function owner (  ) external view returns ( address );
 } 
