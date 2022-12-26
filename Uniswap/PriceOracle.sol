@@ -24,55 +24,55 @@ contract UniswapV3Twap {
     }
 
 
-function estimateAmountOut(
-        address tokenIn,
-        uint128 amountIn,
-        uint32 secondsAgo
-    ) external view returns (uint amountOut) {
-        require(tokenIn == token0 || tokenIn == token1, "invalid token");
+    function estimateAmountOut(
+            address tokenIn,
+            uint128 amountIn,
+            uint32 secondsAgo
+        ) external view returns (uint amountOut) {
+            require(tokenIn == token0 || tokenIn == token1, "invalid token");
 
-        address tokenOut = tokenIn == token0 ? token1 : token0;
+            address tokenOut = tokenIn == token0 ? token1 : token0;
 
-        // (int24 tick, ) = OracleLibrary.consult(pool, secondsAgo);
+            // (int24 tick, ) = OracleLibrary.consult(pool, secondsAgo);
 
-        // Code copied from OracleLibrary.sol, consult()
-        uint32[] memory secondsAgos = new uint32[](2);
-        secondsAgos[0] = secondsAgo;
-        secondsAgos[1] = 0;
+            // Code copied from OracleLibrary.sol, consult()
+            uint32[] memory secondsAgos = new uint32[](2);
+            secondsAgos[0] = secondsAgo;
+            secondsAgos[1] = 0;
 
-        // int56 since tick * time = int24 * uint32
-        // 56 = 24 + 32
-        (int56[] memory tickCumulatives, ) = IUniswapV3Pool(pool).observe(
-            secondsAgos
-        );
+            // int56 since tick * time = int24 * uint32
+            // 56 = 24 + 32
+            (int56[] memory tickCumulatives, ) = IUniswapV3Pool(pool).observe(
+                secondsAgos
+            );
 
-        int56 tickCumulativesDelta = tickCumulatives[1] - tickCumulatives[0];
+            int56 tickCumulativesDelta = tickCumulatives[1] - tickCumulatives[0];
 
-        // int56 / uint32 = int24
-        int24 tick = int24(tickCumulativesDelta / secondsAgo);
-        // Always round to negative infinity
-        /*
-        int doesn't round down when it is negative
-        int56 a = -3
-        -3 / 10 = -3.3333... so round down to -4
-        but we get
-        a / 10 = -3
-        so if tickCumulativeDelta < 0 and division has remainder, then round
-        down
-        */
-        if (
-            tickCumulativesDelta < 0 && (tickCumulativesDelta % secondsAgo != 0)
-        ) {
-            tick--;
+            // int56 / uint32 = int24
+            int24 tick = int24(tickCumulativesDelta / secondsAgo);
+            // Always round to negative infinity
+            /*
+            int doesn't round down when it is negative
+            int56 a = -3
+            -3 / 10 = -3.3333... so round down to -4
+            but we get
+            a / 10 = -3
+            so if tickCumulativeDelta < 0 and division has remainder, then round
+            down
+            */
+            if (
+                tickCumulativesDelta < 0 && (tickCumulativesDelta % secondsAgo != 0)
+            ) {
+                tick--;
+            }
+
+            amountOut = OracleLibrary.getQuoteAtTick(
+                tick,
+                amountIn,
+                tokenIn,
+                tokenOut
+            );
         }
-
-        amountOut = OracleLibrary.getQuoteAtTick(
-            tick,
-            amountIn,
-            tokenIn,
-            tokenOut
-        );
     }
-}
 
 // 5000394861107582788
