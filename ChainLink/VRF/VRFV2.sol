@@ -5,19 +5,13 @@ pragma solidity ^0.8.7;
 import "https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-/**
- * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
- * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
- * DO NOT USE THIS CODE IN PRODUCTION.
- */
-
+// Current deploy 0x17dd0E02146d9Cf6B67f35670732eBFb8bD332aa on Mumbai
 contract VRFv2Consumer is VRFConsumerBaseV2 {
   VRFCoordinatorV2Interface COORDINATOR;
 
   // Your subscription ID.
   uint64 s_subscriptionId;
 
-  // Rinkeby coordinator. For other networks,
   // Mumbal
   address vrfCoordinator = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
 
@@ -58,8 +52,12 @@ contract VRFv2Consumer is VRFConsumerBaseV2 {
     s_subscriptionId = subscriptionId;
   }
 
-  function getRN(uint index) public view returns(uint256) {
-    return uint256(keccak256(abi.encode(s_randomWords[index],msg.sender))) % 36;
+  function setNumberWords(uint32 n) public onlyOwner {
+    numWords = n;
+  }
+
+  function setCallbackGasLimit(uint32 n) public onlyOwner {
+    callbackGasLimit = n;
   }
 
   // Assumes the subscription is funded sufficiently.
@@ -86,3 +84,8 @@ contract VRFv2Consumer is VRFConsumerBaseV2 {
     _;
   }
 }
+
+
+// 0.001083942491116503 : 20 / 1000000
+// 0.000627119540428642 : 1 / 100000
+// 0.000531965442986712 : 1 / 1000000
