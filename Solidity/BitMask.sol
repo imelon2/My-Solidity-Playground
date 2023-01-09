@@ -78,5 +78,4 @@ contract BitMask {
         return x >> bits; // 1
     }
 
-    
 }
