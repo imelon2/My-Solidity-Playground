@@ -72,6 +72,8 @@ contract VRFv2Consumer is VRFConsumerBaseV2 {
     );
   }
 
+  uint256 public gas;
+
   function fulfillRandomWords(
     uint256, /* requestId */
     uint256[] memory randomWords
@@ -86,6 +88,3 @@ contract VRFv2Consumer is VRFConsumerBaseV2 {
 }
 
 
-// 0.001083942491116503 : 20 / 1000000
-// 0.000627119540428642 : 1 / 100000
-// 0.000531965442986712 : 1 / 1000000
