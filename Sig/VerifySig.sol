@@ -6,12 +6,12 @@ contract VerifySig {
     
     function verify(address _signer,string memory _message, bytes memory _sig)
     external pure returns(bool)
-    {
-        bytes32 messageHash = getMessageHash(_message);
-        bytes32 ethSignedMessagewHash = getEthSignedMessageHash(messageHash);
+        {
+            bytes32 messageHash = getMessageHash(_message);
+            bytes32 ethSignedMessagewHash = getEthSignedMessageHash(messageHash);
 
-        return recover(ethSignedMessagewHash,_sig) == _signer;
-    }
+            return recover(ethSignedMessagewHash,_sig) == _signer;
+        }
 
     function getMessageHash(string memory _message) public pure returns(bytes32) {
         return keccak256(abi.encodePacked(_message));
@@ -28,7 +28,7 @@ contract VerifySig {
             return ecrecover(_ethSignedMessageHash,v,r,s);
         }
     
-    function _split(bytes memory _sig) internal pure returns(bytes32 r, bytes32 s, uint8 v) {
+    function _split(bytes memory _sig) public pure returns(bytes32 r, bytes32 s, uint8 v) {
         require(_sig.length == 65,"invalid signature length");
 
         assembly {
