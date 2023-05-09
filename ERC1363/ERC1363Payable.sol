@@ -32,6 +32,9 @@ contract ERC1363Payable is IERC1363Receiver, IERC1363Spender, ERC165, Context {
     // The ERC1363 token accepted
     IERC1363 private _acceptedToken;
 
+    // Example Function for _transferReceived result
+    mapping (address => uint) public _count;
+
     /**
      * @param acceptedToken_ Address of the token being accepted
      */
@@ -107,6 +110,8 @@ contract ERC1363Payable is IERC1363Receiver, IERC1363Spender, ERC165, Context {
      */
     function _transferReceived(address spender, address sender, uint256 amount, bytes memory data) internal virtual {
         // optional override
+        (bool success,) = address(this).call(data);
+
     }
 
     /**
@@ -118,5 +123,13 @@ contract ERC1363Payable is IERC1363Receiver, IERC1363Spender, ERC165, Context {
      */
     function _approvalReceived(address sender, uint256 amount, bytes memory data) internal virtual {
         // optional override
+    }
+
+    function countNum(address sender) public {
+        _count[sender] ++;
+    }
+
+    function getSelector(address _spender) public pure returns(bytes memory) {
+        return abi.encodeWithSignature("countNum(address)", _spender);
     }
 }

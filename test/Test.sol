@@ -2,46 +2,29 @@
 pragma solidity ^0.8.10;
 
 contract Test {
-    uint256 public testvalue;
 
-    function testFunc(uint amount) public returns(uint) {
-        testvalue = testvalue + amount;
-        return testvalue;
-    }
-
-    function testByte(bytes32 _a) public pure returns(bool) {
-        // if(_a.length == 0) {
-        //     return true;
-        // } else {
-        //     return false;
-        // }
-        return _a == 0;
-    }
-
-    function getData() public view returns(uint256,uint256) {
-        uint256 bgn = gasleft();
-        uint256 end = gasleft();
-        return (bgn - end,tx.gasprice);
-    }
-    function testCul(uint256 cost) public pure returns(uint256) {
-        return 1e12 * 500 * cost / 1E18;
-    }
-    function get() pure public returns(uint256) {
-        return type(uint256).max;
-    }
-    function getLength(uint256[] calldata arr) public pure returns(uint) {
-        uint8 betLength = uint8(arr.length);
-        uint256 totalBetAmount;
-        uint256 minBetAmount = 1 ether;
-        uint256 maxBetAmount = 22222222222222222222;
-
-        for(uint i = 0; i < betLength;i++) {
-            uint _betAmount = arr[i];
-            if(_betAmount <= maxBetAmount && _betAmount >= minBetAmount) {
-                totalBetAmount += arr[i];
+ function _revert(bytes memory returndata, string memory errorMessage) public pure {
+        // Look for revert reason and bubble it up if present
+        if (returndata.length > 0) {
+            // The easiest way to bubble the revert reason is using memory via assembly
+            /// @solidity memory-safe-assembly
+            assembly {
+                let returndata_size := mload(returndata)
+                revert(add(32, returndata), returndata_size)
             }
+        } else {
+            revert(errorMessage);
         }
-        return betLength;
+    }
+
+    function bytesLength(bytes memory returndata) public pure returns(uint) {
+        return returndata.length;
+    }
+    
+    function mloadTest(bytes memory returndata) public pure returns(uint returndata_size) {
+        assembly {
+                returndata_size := mload(returndata)
+            }
     }
 }
 // 6.977900552486188000
