@@ -20,8 +20,8 @@ abstract contract EIP712 {
 
     constructor(string memory name,string memory version) {
 		// enc(valueₙ): 32바이트 길이 고정
-        nameHash = keccak256(bytes(name));
-        versionHash = keccak256(bytes(version));
+        nameHash = keccak256(bytes("Dkargo"));
+        versionHash = keccak256(bytes("1"));
 
         // example :
         chainid = 1; // block.chainid;
@@ -77,12 +77,13 @@ abstract contract ERC2612 is EIP712, ERC20 {
         return _nonces[owner];
     }
 
+
     function _useNonce(address owner) internal virtual returns (uint256 current) {
         current = _nonces[owner];
         _nonces[owner]++;
     }
 
-    function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) internal pure returns (bytes32) {
+    function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) public pure returns (bytes32) {
         return keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
     }
 

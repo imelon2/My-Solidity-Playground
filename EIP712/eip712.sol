@@ -11,7 +11,7 @@ contract ExampleEip712 {
     }
 
     // domain data
-    bytes32 private  immutable nameHash; // name
+    bytes32 private immutable nameHash; // name
     bytes32 private immutable versionHash; // version
     uint256 private immutable chainid; // chain id
     address private immutable verifyingContract; // verifyingContract
@@ -26,8 +26,8 @@ contract ExampleEip712 {
     // domain separator은 EIP712에서 구조화되어 고정값이니, 배포시 저장
     constructor(string memory name,string memory version) {
 		// enc(valueₙ): 32바이트 길이 고정
-        nameHash = keccak256(bytes(name));
-        versionHash = keccak256(bytes(version));
+        nameHash = keccak256(bytes("Ether Mail"));
+        versionHash = keccak256(bytes("1"));
 
         // example :
         chainid = 1; // block.chainid;
@@ -51,13 +51,13 @@ contract ExampleEip712 {
         return domainSeparator;
     }
 
-	// hashStruct
+	// hashStruct : keccak256(abi.encode(typeHash ‖ encodeData(s)))
     function getHashStruct(Mail memory mail) public view returns(bytes32) {
         return keccak256(abi.encode(
             mailTypeHash,
             mail.from,
             mail.to,
-            keccak256(bytes(mail.contents))
+            keccak256(bytes(mail.contents)) // enc(valueₙ): 32바이트 길이 고정
             ));
     }
 
@@ -86,3 +86,9 @@ contract ExampleEip712 {
         }
     }
 }
+
+
+
+/* Test Tupple Data 
+ * ["0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826","0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB","'Hello, Bob!'"]
+*/

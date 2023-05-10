@@ -19,13 +19,13 @@ contract Bank {
         ERC20Addr = Dkargo(_mytoken);
     }
 
-    function depositNoPermit(address spender,uint256 amount) public {
+    function depositNoPermit(address owner,uint256 amount) public {
         // must be pre-approve
-        ERC20Addr.transferFrom(spender, address(this), amount);
+        ERC20Addr.transferFrom(owner, address(this), amount);
     }
 
-    function deposit(address spender,uint256 amount,uint256 deadline,uint8 v,bytes32 r, bytes32 s) public {
-        ERC20Addr.permit(spender, address(this), amount, deadline, v, r, s);
-        ERC20Addr.transferFrom(spender, address(this), amount);
+    function deposit(address owner, address spender,uint256 amount,uint256 deadline,uint8 v,bytes32 r, bytes32 s) public {
+        ERC20Addr.permit(owner, spender, amount, deadline, v, r, s);
+        ERC20Addr.transferFrom(owner, spender, amount);
     }
 }
