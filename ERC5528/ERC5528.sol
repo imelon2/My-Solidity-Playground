@@ -86,4 +86,8 @@ contract EscrowContract is IERC5528 {
     function _min(uint x, uint y) private pure returns(uint) {
         return x <= y ? x : y;
     }
+
+    function getStatus() public view returns(State) {
+        return _status;
+    }
 }

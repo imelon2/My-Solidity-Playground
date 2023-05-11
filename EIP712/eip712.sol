@@ -25,6 +25,11 @@ contract ExampleEip712 {
 
     // domain separator은 EIP712에서 구조화되어 고정값이니, 배포시 저장
     constructor(string memory name,string memory version) {
+		// type hash 
+        domainTypeHash = keccak256(
+            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+        );
+
 		// enc(valueₙ): 32바이트 길이 고정
         nameHash = keccak256(bytes("Ether Mail"));
         versionHash = keccak256(bytes("1"));
@@ -35,10 +40,6 @@ contract ExampleEip712 {
         // example :
         verifyingContract = 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC; // address(this);
 
-		// type hash 
-        domainTypeHash = keccak256(
-            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-        );
         mailTypeHash = keccak256(
             "Mail(address from,address to,string contents)"
         );
@@ -90,5 +91,5 @@ contract ExampleEip712 {
 
 
 /* Test Tupple Data 
- * ["0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826","0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB","'Hello, Bob!'"]
+ * ["0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826","0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB","Hello, Bob!"]
 */

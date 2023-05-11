@@ -1,30 +1,27 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.9;
 
-contract dkanrjsk {
-    uint public minMultiplier = 100;
-    uint public maxMultiplier = 10000;
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-    function amountToBettableAmountConverter(uint amount) public pure returns(uint) {
-        return amount * (10000 - 300) / 10000;
+contract MyToken is ERC721, ERC721Enumerable {
+    constructor() ERC721("MyToken", "MTK") {}
+
+    // The following functions are overrides required by Solidity.
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
+        internal
+        override(ERC721, ERC721Enumerable)
+    {
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
-    function amountToWinnableAmount(uint _amount, uint multiplier) public pure returns (uint) {
-        uint bettableAmount = amountToBettableAmountConverter(_amount);
-        return bettableAmount * multiplier / 100;
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
-
-    function test(uint256 randomNumber)
-        public view returns(uint) {
-        uint H = randomNumber % (maxMultiplier - minMultiplier + 1);
-        uint E = maxMultiplier / 100;
-        uint multiplierOutcome = (E * maxMultiplier - H) / (E * 100 - H);
-
-        return (multiplierOutcome);
-    }
-
-    function test2(uint a,uint b) public pure returns(uint) {
-        return a / b;
-    }
-    
 }
