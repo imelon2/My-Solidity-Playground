@@ -49,6 +49,9 @@ contract Test {
         // uint256 e = b;
     }
 
+    function get() public view returns(uint) {
+        return block.chainid;
+    }
 }
 // 6.977900552486188000
 // 0xa8694da46a1160f181da73e8b7b3fc57c74ea4a9cf5c2f03edb58c4a244ad90a

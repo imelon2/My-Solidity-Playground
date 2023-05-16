@@ -3,7 +3,7 @@ pragma solidity ^0.8.10;
 
 contract Receiver {
     event Received(address caller, uint amount);
-
+    event gasEvent(uint _gas);
     uint public a;
 
     // fallback() external payable {
@@ -16,8 +16,9 @@ contract Receiver {
     //     return amount + 1;
     // }
 
-    function test() public {
+    function test() external  {
         a = gasleft();
+        emit gasEvent(gasleft());
     }
 }
 
@@ -44,12 +45,15 @@ contract Caller {
         }
 
     }
+    function getGyte() public pure returns(bytes memory) {
+        return abi.encodeWithSignature("test()");
+    }
 
-    function test(address _addr,uint reqGas) public {
-        (bool success, bytes memory data) = _addr.call{gas: reqGas}(
-            abi.encodeWithSignature("test()")
+    function test(address _addr,uint reqGas,bytes memory _calldata) public {
+        (bool success, bytes memory data) = _addr.call{gas:reqGas}(
+            _calldata
         );
-
+        isGas=gasleft();
         emit Response(success, data,gasleft());
     }
 
