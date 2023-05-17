@@ -31,14 +31,14 @@ contract ExampleEip712 {
         );
 
 		// enc(valueₙ): 32바이트 길이 고정
-        nameHash = keccak256(bytes("Ether Mail"));
-        versionHash = keccak256(bytes("1"));
+        nameHash = keccak256(bytes(name));
+        versionHash = keccak256(bytes(version));
 
         // example :
-        chainid = 1; // block.chainid;
+        chainid = block.chainid;
 
         // example :
-        verifyingContract = 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC; // address(this);
+        verifyingContract = address(this); // address(this);
 
         mailTypeHash = keccak256(
             "Mail(address from,address to,string contents)"
