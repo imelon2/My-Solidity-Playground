@@ -7,7 +7,7 @@ import "./ERC2612.sol";
 // ERC20 Contract
 contract Dkargo is ERC2612 {
     constructor() ERC20("Dkargo", "DKA") ERC2612("Dkargo") {
-        _mint(0xd644352A429F3fF3d21128820DcBC53e063685b1, 100 * 10 ** decimals());
+        _mint(msg.sender, 100 * 10 ** decimals());
     }
 }
 
