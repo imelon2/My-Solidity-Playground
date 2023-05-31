@@ -6,9 +6,7 @@ pragma solidity ^0.8.10;
 // import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
 
 
-contract CodeV1 {
-    address public implementation;
-    address public admin;
+contract LogicV1 {
     uint public count;
 
     function inc() external {
@@ -16,9 +14,7 @@ contract CodeV1 {
     }
 }
 
-contract CodeV2 {
-    address public implementation;
-    address public admin;
+contract LogicV2 {
     uint public count;
 
     function inc() external {
@@ -30,7 +26,8 @@ contract CodeV2 {
     }
 }
 
-contract BuggyProxy {
+contract Proxy {
+    uint public count;
     address public implementation;
     address public admin;
 
@@ -38,65 +35,23 @@ contract BuggyProxy {
         admin = msg.sender;
     }
 
+    function upgradeTo(address _implementation) external {
+        require(msg.sender == admin, "not authorized");
+
+        implementation = _implementation;
+    }
+
     function _delegate() private {
         (bool ok,) = implementation.delegatecall(msg.data);
         require(ok,"delegatecall failed");
     }
-    // function _delegate(address _implementation) private {
-    //     assembly {
-    //         // Copy msg.data. We take full control of memory in this inline assembly
-    //         // block because it will not return to Solidity code. We overwrite the
-    //         // Solidity scratch pad at memory position 0.
-
-    //         // calldatacopy(t, f, s)
-    //         // - copy s bytes from calldata at position f to mem at position t
-    //         // calldatasize() - size of call data in bytes
-
-    //         // CALLDATASIZE: msg.data의 길이를 반환합니다. 이 때 단위는 “바이트" 입니다.
-    //         // CALLDATACOPY(t, f, s): msg.data 의 f번째 위치에서 s개의 바이트를 읽어 메모리의 t번째 위치에 저장합니다.
-    //         calldatacopy(0, 0, calldatasize())
- 
-    //         // Call the implementation.
-    //         // out and outsize are 0 because we don't know the size yet.
-
-    //         // delegatecall(g, a, in, insize, out, outsize) -
-    //         // - call contract at address a
-    //         // - with input mem[in…(in+insize))
-    //         // - providing g gas
-    //         // - and output area mem[out…(out+outsize))
-    //         // - returning 0 on error (eg. out of gas) and 1 on success
-    //         let result := delegatecall(gas(), _implementation, 0, calldatasize(), 0, 0)
-
-    //         // Copy the returned data.
-    //         // returndatacopy(t, f, s) - copy s bytes from returndata at position f to mem at position t
-    //         // returndatasize() - size of the last returndata
-    //         returndatacopy(0, 0, returndatasize())
-
-    //         switch result
-    //         // delegatecall returns 0 on error.
-    //         case 0 {
-    //             // revert(p, s) - end execution, revert state changes, return data mem[p…(p+s))
-    //             revert(0, returndatasize())
-    //         }
-    //         default {
-    //             // return(p, s) - end execution, return data mem[p…(p+s))
-    //             return(0, returndatasize())
-    //         }
-    //     }
-    // }
-
+    
     fallback() external payable {
         _delegate();
     }
 
     receive() external payable {
         _delegate();
-    }
-    
-    function upgradeTo(address _implementation) external {
-        require(msg.sender == admin, "not authorized");
-
-        implementation = _implementation;
     }
 }
 

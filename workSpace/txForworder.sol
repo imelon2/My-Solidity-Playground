@@ -3,7 +3,7 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 // ERC2770
-contract txForworder is EIP712 {
+contract TxForwarder is EIP712 {
     using ECDSA for bytes32;
 
     // meta data
