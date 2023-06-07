@@ -10,43 +10,43 @@ import "./ERC5484BurnAuth.sol"; // Soul Bound burn authorization
 
 contract SBT is  ERC5192Lock,ERC5484BurnAuth, ERC721Enumerable, ERC721URIStorage {
     using Counters for Counters.Counter;
-
     Counters.Counter private _tokenIdCounter;
-    address private immutable OrderRulesContract;
 
-    constructor(address _OrderRulesContract) ERC5192Lock("SBT", "SBT", true /* true(Lock 활성) || false(Lock 비활성) */) {
-        OrderRulesContract = _OrderRulesContract;
+    address private immutable SBTMinter;
+
+    constructor(address _SBTMinterContract) ERC5192Lock("SBT", "SBT", true /* true(Lock 활성) || false(Lock 비활성) */) {
+        SBTMinter = _SBTMinterContract;
     }
 
-    modifier OnlyOrderRules() {
-        require(msg.sender == OrderRulesContract,"Only OrderRules can Call");
+    modifier OnlySBTMinter() {
+        require(msg.sender == SBTMinter,"Only SBTMinter can Call");
         _;
     }
 
     modifier checkAuth(uint256 tokenId) {
         BurnAuth _butnauth = auth[tokenId];
         if(_butnauth == BurnAuth.IssuerOnly) {
-            require(msg.sender == OrderRulesContract,"ERC5484 : Only Issuer can burn SBT");
+            require(msg.sender == SBTMinter,"ERC5484 : Only Issuer can burn SBT");
         } else if(_butnauth == BurnAuth.OwnerOnly) {
             require(msg.sender == _ownerOf(tokenId),"ERC5484 : Only Token owner can burn SBT");
         } else if(_butnauth == BurnAuth.Both) {
-            require(msg.sender == _ownerOf(tokenId) || msg.sender == OrderRulesContract,"ERC5484 : Only Token owner and Issuer can burn SBT");
+            require(msg.sender == _ownerOf(tokenId) || msg.sender == SBTMinter,"ERC5484 : Only Token owner and Issuer can burn SBT");
         } else if(_butnauth == BurnAuth.Neither) {
             revert("ERC5484 : Cant burn SBT");
         }
         _;
     }
 
-    function safeMint(address to, string memory uri, BurnAuth _auth) external OnlyOrderRules {
+    function safeMint(address to, string memory uri) external OnlySBTMinter {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
 
-        _setAuth(msg.sender,to, tokenId, _auth);
+        _setAuth(msg.sender,to, tokenId, BurnAuth.Neither);
     }
 
-    function setTokenURI(uint256 _tokenId,string calldata _tokenURI) external OnlyOrderRules {
+    function setTokenURI(uint256 _tokenId,string calldata _tokenURI) external OnlySBTMinter {
         _setTokenURI(_tokenId, _tokenURI);
     }
 

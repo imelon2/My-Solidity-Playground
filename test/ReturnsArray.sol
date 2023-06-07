@@ -2,8 +2,12 @@
 pragma solidity ^0.8.13;
 
 contract ReturnsArray {
-mapping(address => uint) public balance;
+    mapping(address => uint) public balance;
+    uint256[100] private requirements;
 
+    function getLength() public view returns(uint) {
+        return requirements.length;
+    }
     function getBalanceByAddressList(address[] calldata users) public view returns(uint[] memory) {
         uint _length = users.length;
         
@@ -17,5 +21,9 @@ mapping(address => uint) public balance;
          }
 
         return results;
+    }
+
+    function testBool(bool a, bool b, bool c) public pure returns(bool) {
+        return a && b || c;
     }
 }

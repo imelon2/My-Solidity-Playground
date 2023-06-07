@@ -34,7 +34,7 @@ contract OrderRules is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         carrierFee = 3;
         timeExpiredDelayedPick = 3 hours;
         timeExpiredDeliveryFault = 4 hours;
-        timeExpiredWaitMatching = 8 hours;
+        timeExpiredWaitMatching = 30 minutes;
     }
 
     // GET() Fee
