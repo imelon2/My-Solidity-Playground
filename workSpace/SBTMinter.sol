@@ -5,17 +5,15 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "./interface/IOrderRules.sol";
+import "./interface/IOrder.sol";
 import "./SBT/interface/ISBT.sol";
 
 
 contract SBTMinter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
-    
     address private OrderRulesCotntract;
     address private OrderContract;
-    address private SBTShipper;
-    address private SBTCarrier;
-
+   
     mapping (uint256 => string) private tierUri; // (등급업을 위한 충족 횟수 => 충족시 적용되는 URI)
     uint256[100] private requirements; // 현재 등록된 티어 순서 및 충족 횟수
 
@@ -35,14 +33,11 @@ contract SBTMinter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _;
     }
 
-
-    function initialize(address _OrderRulesCotntract,address _SBTShipper, address _SBTCarrier,address _OrderContract) initializer public {
+    function initialize(address _OrderRulesCotntract, address _OrderContract) initializer public {
         __Ownable_init();
         __UUPSUpgradeable_init();
 
         OrderRulesCotntract = _OrderRulesCotntract;
-        SBTShipper = _SBTShipper;
-        SBTCarrier = _SBTCarrier;
         OrderContract = _OrderContract;
     }
 
@@ -80,8 +75,7 @@ contract SBTMinter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     ///@notice 현재 등록된 SBT 모든 티어 등급업 조건 및 해당 URI 조회 함수
     function getRules() public view returns(SBTInfo[] memory) {
         uint _length = requirements.length;
-        SBTInfo[] memory results = new SBTInfo[](_length);
-
+        SBTInfo[] memory results;
 
         for(uint i = 0; i < _length; i++) {
              results[i] = SBTInfo({
@@ -90,9 +84,10 @@ contract SBTMinter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
                  uri:tierUri[requirements[i]]
              });
 
-             if(requirements[i+1]==0) break ;
-         }
-
+        if(requirements[i+1] == 0) break;
+        
+        }
+         
         return results;
     }
 
@@ -107,26 +102,22 @@ contract SBTMinter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     }
 
 
-    ///@notice SBT 민팅 함수 || 등급업 (setURI) 함수
-    ///@dev 사용자의 OrderCount *Order Contract의 함수 호출 구현시, 삭제 예정(참조:todo)
+    ///@notice SBT 민팅 함수(safeMint) || 승급 함수(setURI)
     ///@param _owner : Order Contract의 사용자 지갑주소
     ///@param SBTAddress : Shipper||Carrier SBT Contract 주소
-    function checkAvailableSBTs(address _owner,address SBTAddress) external OnlyOrder returns(bool) {
-        require(SBTAddress == SBTShipper || SBTAddress == SBTCarrier,"Only Lodis' SBT address");
+    function checkAvailableSBTs(address _owner,address SBTAddress) external OnlyOrder {
+        require(SBTAddress == IOrderRules(OrderRulesCotntract).getShipperSBTAddress() || SBTAddress == IOrderRules(OrderRulesCotntract).getCarrierSBTAddress(), "Only Lodis' SBT address");
 
         // 최초 민팅시
         if(IERC721(SBTAddress).balanceOf(_owner) == 0) {
             ISBT(SBTAddress).safeMint(_owner,tierUri[requirements[0]]);
-            return true;
+            return;
         }
 
-        // todo : order contract로 부터 유저의 OrderCount를 불러오는 함수
-        // uint orderCount = OrderContract.getCompleteOrderCount();
-        uint256 orderCount = 2;
+        uint orderCount = IOrder(OrderContract).getRecord(_owner).completeOrder;
 
         for (uint i=0; i < requirements.length; i++) 
         {
-            // if(requirements[i+1] == 0) break; // 다음 tier가 없으면 break
             uint currentStep = requirements[i];
             uint nextStep = requirements[i+1];
             if(currentStep <= orderCount && orderCount < nextStep || nextStep == 0) {
@@ -136,12 +127,10 @@ contract SBTMinter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
                 if(keccak256(abi.encodePacked(currentTokenUri)) == keccak256(abi.encodePacked(upgradeUri))) {
                     break;
                 }
-
                 ISBT(SBTAddress).setTokenURI(_tokenId,upgradeUri);
                 break ;
             } 
         }
-        return true;
     }
 
     function _authorizeUpgrade(address newImplementation)

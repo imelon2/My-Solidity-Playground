@@ -43,8 +43,16 @@ interface IOrderRules {
     function getSBTMinterAddress() external view returns(address);
 
     /// @notice Treasury contract address 호출하는 함수
-    function getTreasuryddress() external view returns(address);
+    function getTreasuryAddress() external view returns(address);
 
-    /// @notice 가스비 대납 컨트렉트(TxForwarder) contract address 호출하는 함수
-    function getTxForwarderAddress() external view returns(address);
+    /// @notice DKA contract address 호출하는 함수
+    function getShipperSBTAddress() external view returns(address);
+
+    /// @notice SBTMinter contract address 호출하는 함수
+    function getCarrierSBTAddress() external view returns(address);
+
+    /// @notice Treasury contract address 호출하는 함수
+    function getDefaultSBTAddress() external view returns(address);
+
+
 } 

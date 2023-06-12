@@ -18,6 +18,9 @@ contract OrderRules is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     address private DKAToken;
     address private SBTMinter;
     address private Treasury;
+    address private ShipperSBT;
+    address private CarrierSBT;
+    address private DefaultSBT;
 
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -66,10 +69,18 @@ contract OrderRules is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function getSBTMinterAddress() external view returns(address) {
         return SBTMinter;
     }
-    function getTreasuryddress() external view returns(address) {
+    function getTreasuryAddress() external view returns(address) {
         return Treasury;
     }
-
+    function getShipperSBTAddress() external view returns(address) {
+        return ShipperSBT;
+    }
+    function getCarrierSBTAddress() external view returns(address) {
+        return CarrierSBT;
+    }
+    function getDefaultSBTAddress() external view returns(address) {
+        return DefaultSBT;
+    }
 
     // SET() Fee
     function setPlatformFee(uint256 _platformFee) external onlyOwner {
@@ -100,8 +111,17 @@ contract OrderRules is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function setSBTMinterAddress(address _SBTMinter) external onlyOwner {
         SBTMinter = _SBTMinter;
     }
-    function setTreasuryddress(address _Treasury) external onlyOwner {
+    function setTreasuryAddress(address _Treasury) external onlyOwner {
         Treasury = _Treasury;
+    }
+    function setShipperSBTAddress(address _ShipperSBT) external onlyOwner {
+        ShipperSBT = _ShipperSBT;
+    }
+    function setCarrierSBTAddress(address _CarrierSBT) external onlyOwner {
+        CarrierSBT = _CarrierSBT;
+    }
+    function setDefaultSBTAddress(address _DefaultSBT) external onlyOwner {
+        DefaultSBT = _DefaultSBT;
     }
 
 
